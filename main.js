@@ -15,7 +15,7 @@ function createWindow () {
 
   login.setMainWindow(mainWindow);
   login.registerSplatnetHandler();
-  login.openNSOLogin();
+  login.openSplatNet();
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
