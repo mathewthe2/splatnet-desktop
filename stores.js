@@ -1,10 +1,7 @@
-const Store = require('./store');
+const Store = require('electron-store');
 
 const userDataStore = new Store({
-  configName: 'user-data',
-  defaults: {
-    sessionToken: '',
-    iksmCookie: '',
-  }
+  sessionToken: '',
+  iksmCookie: '',
 });
 module.exports.userDataStore = userDataStore;
