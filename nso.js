@@ -263,9 +263,13 @@ async function getSplatnetSession(sessionTokenCode, sessionVerifier) {
 }
 
 async function setIksmToken(cookieValue, ses) {
+  // set cookies for BrowserWindow
   ses.clearStorageData([], (data) => {})
   const cookie = { url: splatnetUrl, name: 'iksm_session', value: cookieValue }
   await ses.cookies.set(cookie);
+  // set cookies in jar for requests used in our validation function
+  jar.setCookie(request2.cookie(`iksm_session=${cookieValue}`), splatnetUrl);
+  await getUniqueIdMemo10(cookieValue);
   return cookie;
 }
 
