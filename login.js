@@ -61,30 +61,32 @@ function openNSOLogin () {
 
 function openSplatNet () {
   mainWindow.loadFile('./views/loading.html')
-  nso.checkIksmValid()
-  .then(isValid=>{
-    if (isValid) {
-      nso.setIksmToken(nso.getIksmToken(), mainWindow.webContents.session)
-    .then(()=> mainWindow.loadURL(`${splatnetUrl}/home`))
-    } else {
-      const session_token = userDataStore.get('sessionToken');
-      if (session_token.length > 0) {
-        nso.refresh_iksm(session_token)
-        .then(iksm =>{
-          nso
-          .setIksmToken(iksm, mainWindow.webContents.session)
-          .then(()=> mainWindow.loadURL(`${splatnetUrl}/home`))
-        })
-        .catch(err => {
-          console.log('Error refreshing iksm with session token:', err)
-          openNSOLogin();
-        }) 
-      } else {
-        // No cookies or tokens
-        openNSOLogin();
-      }
-    }
-  })
+  iksm = userDataStore.get('iksmCookie')
+  if (iksm) {
+    nso.checkIksmValid(iksm, mainWindow.webContents.session)
+    .then(isValid=>{
+        if (isValid) {
+            mainWindow.loadURL(`${splatnetUrl}/home`)
+        } else {
+        const session_token = userDataStore.get('sessionToken');
+        if (session_token) {
+            nso.refresh_iksm(session_token)
+            .then(iksm =>{
+            nso
+            .setIksmToken(iksm, mainWindow.webContents.session)
+            .then(()=> mainWindow.loadURL(`${splatnetUrl}/home`))
+            })
+            .catch(err => {
+            console.log('Error refreshing iksm with session token:', err)
+            openNSOLogin();
+            }) 
+        } else {
+            // No cookies or tokens
+            openNSOLogin();
+        }
+        }
+    })
+  }
 }
 
 

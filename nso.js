@@ -285,9 +285,9 @@ function getIksmToken() {
   return value;
 }
 
-async function checkIksmValid() {
+async function checkIksmValid(iksm, ses) {
   try {
-    const cookieValue = getIksmToken();
+    await setIksmToken(iksm, ses)
     await getSplatnetApi('schedule');
     return true;
   } catch (e) {
