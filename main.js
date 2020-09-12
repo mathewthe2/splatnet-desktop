@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const login = require('./login');
 
 function createWindow () {
   // Create the browser window.
@@ -12,8 +13,9 @@ function createWindow () {
     }
   })
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  login.setMainWindow(mainWindow);
+  login.registerSplatnetHandler();
+  login.openNSOLogin();
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
