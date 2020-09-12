@@ -60,9 +60,9 @@ function openNSOLogin () {
 }
 
 function openSplatNet () {
-  mainWindow.loadFile('./views/loading.html')
   iksm = userDataStore.get('iksmCookie')
   if (iksm) {
+    mainWindow.loadFile('./views/loading.html')
     nso.checkIksmValid(iksm, mainWindow.webContents.session)
     .then(isValid=>{
         if (isValid) {
@@ -86,6 +86,9 @@ function openSplatNet () {
         }
         }
     })
+  } else {
+    // First Time Login
+    openNSOLogin()
   }
 }
 
