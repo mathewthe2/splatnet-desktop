@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const { app } = require('electron');
 const Memo = require('promise-memoize');
 
-const userAgentVersion = `1.11.0`;
+const userAgentVersion = `1.12.0`;
 const userAgentString = `com.nintendo.znca/${userAgentVersion} (Android/7.1.2)`;
 const appVersion = app.getVersion();
 const splatnetDesktopUserAgentString = `splatnetDesktop/${appVersion}`;
