@@ -1,6 +1,6 @@
 {
   "name": "splatnet-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Electron Wrapper for Nintendo Login and SplatNet on Desktop",
   "main": "main.js",
   "scripts": {
