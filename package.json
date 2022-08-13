@@ -18,12 +18,12 @@
   },
   "homepage": "https://github.com/mathewthe2/splatnet-desktop#readme",
   "devDependencies": {
-    "electron": "^10.1.1",
-    "electron-packager": "^15.1.0"
+    "electron": "^20.0.2",
+    "electron-packager": "^15.5.1"
   },
   "dependencies": {
     "base64url": "^3.0.1",
-    "electron-store": "^6.0.0",
+    "electron-store": "^8.1.0",
     "promise-memoize": "^1.2.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
