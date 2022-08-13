@@ -19,6 +19,7 @@
   "homepage": "https://github.com/mathewthe2/splatnet-desktop#readme",
   "devDependencies": {
     "electron": "^20.0.2",
+    "electron-builder": "^23.3.3",
     "electron-packager": "^15.5.1"
   },
   "dependencies": {
