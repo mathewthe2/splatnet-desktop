@@ -13,6 +13,28 @@ Currently Windows (exe) and OS X (dmg) are supported. Get the packages here http
 - **Iksm token**: The app sends a request to flapg server with the Session Token to get the f flag required for Nintendo's Web Service endpoint. This returns the Iksm token. The Iksm token is placed in BrowserWindow cookies and is the only value required to access SplatNet.
 - Once we have the Session Token, we can refresh the Iksm token without further logins.
 
+### Run
+
+```
+npm install
+npm start
+```
+
+### Distribute
+
+Win
+
+```
+electron-builder build --win portable
+```
+
+Mac
+
+```
+electron-builder build
+electron-builder build --x64
+```
+
 ### Privacy Statement
 I am not affiliated with Nintendo in any way, and I have no aceess to nor do I save any usernames, passwords, or web tokens.
 
