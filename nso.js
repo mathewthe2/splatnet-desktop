@@ -1,6 +1,5 @@
 const { userDataStore } = require('./stores');
 const request2 = require('request-promise-native');
-
 const { v4: uuidv4 } = require('uuid');
 const { app } = require('electron');
 const Memo = require('promise-memoize');
@@ -114,6 +113,29 @@ async function getHash(idToken, timestamp) {
   return responseObject.hash;
 }
 
+async function callImink(idToken, step) {
+  const response = await request({
+    method: 'POST',
+    uri: 'https://api.imink.app/f',
+    headers: {
+      'User-Agent':   splatnetDesktopUserAgentString,
+      'Content-Type': 'application/json; charset=utf-8'
+    }, 
+    form: {
+        token: idToken,
+        hashMethod: step.toString()
+      },
+  });
+  const responseObject = JSON.parse(response);
+  const iminkResult = {
+    f: responseObject['f'],
+    idToken:idToken,
+    timestamp: responseObject['timestamp'],
+    uuid : responseObject["request_id"]
+  }
+  return iminkResult;
+}
+
 async function callFlapg(idToken, guid, timestamp, login) {
   const hash = await getHash(idToken, timestamp)
   const response = await request({
@@ -163,10 +185,10 @@ async function getUserInfo(token) {
   };
 }
 
-async function getApiLogin(userinfo, flapg_nso) {
+async function getApiLogin(userinfo, iminkResult) {
   const resp = await request({
     method: 'POST',
-    uri: 'https://api-lp1.znc.srv.nintendo.net/v1/Account/Login',
+    uri: 'https://api-lp1.znc.srv.nintendo.net/v3/Account/Login',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'X-Platform': 'Android',
@@ -179,10 +201,10 @@ async function getApiLogin(userinfo, flapg_nso) {
         language: userinfo.language,
         naCountry: userinfo.country,
         naBirthday: userinfo.birthday,
-        f: flapg_nso.f,
-        naIdToken: flapg_nso.p1,
-        timestamp: flapg_nso.p2,
-        requestId: flapg_nso.p3
+        f: iminkResult.f,
+        naIdToken: iminkResult.idToken,
+        timestamp: iminkResult.timestamp,
+        requestId: iminkResult.uuid
       }
     },
     json: true,
@@ -191,7 +213,7 @@ async function getApiLogin(userinfo, flapg_nso) {
   return resp.result.webApiServerCredential.accessToken;
 }
 
-async function getWebServiceToken(token, flapg_app) {
+async function getWebServiceToken(token, iminkResult) {
   const resp = await request({
     method: 'POST',
     uri: 'https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken',
@@ -205,10 +227,10 @@ async function getWebServiceToken(token, flapg_app) {
     json: {
       parameter: {
         id: 5741031244955648, // SplatNet 2 ID
-        f: flapg_app.f,
-        registrationToken: flapg_app.p1,
-        timestamp: flapg_app.p2,
-        requestId: flapg_app.p3
+        f: iminkResult.f,
+        registrationToken: iminkResult.idToken,
+        timestamp: iminkResult.timestamp,
+        requestId: iminkResult.uuid
       }
     }
   });
@@ -242,12 +264,14 @@ async function getSessionCookie(token) {
 async function getSessionWithSessionToken(sessionToken) {
   const apiTokens = await getApiToken(sessionToken);
   const userInfo = await getUserInfo(apiTokens.access);
-  const guid = uuidv4();
-  const timestamp = String(Math.floor(Date.now() / 1000));
-  const flapg_nso = await callFlapg(apiTokens.id, guid, timestamp, "nso");
-  const apiAccessToken = await getApiLogin(userInfo, flapg_nso);
-  const flapg_app = await callFlapg(apiAccessToken, guid, timestamp, "app");
-  const splatnetToken = await getWebServiceToken(apiAccessToken, flapg_app);
+  // const guid = uuidv4();
+  // const timestamp = String(Math.floor(Date.now() / 1000));
+  // const flapg_nso = await callFlapg(apiTokens.id, guid, timestamp, "nso");
+  let iminkResult = await callImink(apiTokens.id, 1)
+  const apiAccessToken = await getApiLogin(userInfo, iminkResult);
+  iminkResult = await callImink(apiAccessToken, 2)
+  // const flapg_app = await callFlapg(apiAccessToken, guid, timestamp, "app");
+  const splatnetToken = await getWebServiceToken(apiAccessToken, iminkResult);
   await getSessionCookie(splatnetToken.accessToken);
   return splatnetToken;
 }
